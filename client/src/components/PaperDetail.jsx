@@ -9,7 +9,15 @@ export function PaperDetail({ paper, onClose }) {
 
   return (
     <div
-      className={`fixed top-0 right-0 h-full w-80 bg-gray-900 border-l border-gray-700 flex flex-col z-50 transition-transform duration-300 ${visible ? 'translate-x-0' : 'translate-x-full'}`}
+      className={`
+        fixed z-50 bg-gray-900 transition-transform duration-300
+        bottom-0 left-0 right-0 h-2/5 border-t border-gray-700 flex flex-col
+        md:top-0 md:bottom-auto md:left-auto md:right-0 md:h-full md:w-80 md:border-t-0 md:border-l
+        ${visible
+          ? 'translate-y-0 md:translate-y-0 md:translate-x-0'
+          : 'translate-y-full md:translate-y-0 md:translate-x-full'
+        }
+      `}
     >
       {visible && (
         <>

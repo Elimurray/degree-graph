@@ -11,7 +11,7 @@ export function DegreeSelector({ selectedDegreeId, onSelect }) {
     <select
       value={selectedDegreeId ?? ''}
       onChange={(e) => onSelect(e.target.value || null)}
-      className="bg-gray-800 border border-gray-600 rounded-md px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      className="w-36 md:w-auto bg-gray-800 border border-gray-600 rounded-md px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
     >
       <option value="">Select a degree...</option>
       {degrees.map((degree) => (
