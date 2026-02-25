@@ -1,0 +1,19 @@
+{
+  "name": "degree-graph",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server",
+    "scraper"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=client\" \"npm run dev --workspace=server\"",
+    "migrate": "ssh pi5@pi5.local \"docker exec -i boe_postgres psql -U eli -d degree_graph -f -\" < db/migrations/001_initial_schema.sql",
+    "scrape": "npm run scrape --workspace=scraper",
+    "build": "npm run build --workspace=client"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "permissions": {
+    "allow": ["Bash(npm *)", "Bash(ssh pi5 *)", "Bash(psql *)", "Bash(*)"]
+  }
+}
