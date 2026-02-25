@@ -9,13 +9,13 @@ Currently supports:
 
 ## Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 18 + Vite + Tailwind CSS v4 |
-| Graph | @xyflow/react (React Flow v12) |
-| Backend | Node.js + Express |
+| Layer    | Technology                             |
+| -------- | -------------------------------------- |
+| Frontend | React 18 + Vite + Tailwind CSS v4      |
+| Graph    | @xyflow/react (React Flow v12)         |
+| Backend  | Node.js + Express                      |
 | Database | PostgreSQL in Docker on Raspberry Pi 5 |
-| Scraper | Playwright + Cheerio |
+| Scraper  | Playwright + Cheerio                   |
 
 ## Features
 
@@ -78,11 +78,27 @@ npm run migrate
 
 ### Scrape data
 
-```bash
-npm run scrape
-```
+# By slug
 
-Produces `scraper/data/papers.json` and `scraper/data/degrees.json`.
+npm run scrape -- software-engineering
+npm run scrape -- civil-engineering
+npm run scrape -- computer-science
+
+# By full URL
+
+npm run scrape -- "https://www.waikato.ac.nz/study/subject-regulations/mechanical-engineering"
+
+# Unknown degree — supply metadata manually
+
+npm run scrape -- creative-technologies --name "Bachelor of Creative Technologies" --points 360
+
+# Override the derived degree code
+
+npm run scrape -- software-engineering --code MY-CODE
+
+# Re-fetch all paper details (overwrite existing paper records)
+
+npm run scrape -- software-engineering --force
 
 ### Seed database
 
@@ -100,18 +116,18 @@ Opens the client at `http://localhost:5173`, API at `http://localhost:3002`.
 
 ## API
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/degrees` | List all degrees |
-| GET | `/api/degrees/:id` | Degree metadata |
-| GET | `/api/degrees/:id/graph` | Nodes + edges in React Flow format |
-| GET | `/api/papers` | All papers |
-| GET | `/api/papers/:code` | Single paper |
-| GET | `/api/papers/:code/prerequisites` | Prerequisites for a paper |
-| POST | `/api/progress` | Create a progress session |
-| GET | `/api/progress/:id` | Get progress |
-| PATCH | `/api/progress/:id` | Update completed papers |
-| DELETE | `/api/progress/:id` | Delete progress |
+| Method | Endpoint                          | Description                        |
+| ------ | --------------------------------- | ---------------------------------- |
+| GET    | `/api/degrees`                    | List all degrees                   |
+| GET    | `/api/degrees/:id`                | Degree metadata                    |
+| GET    | `/api/degrees/:id/graph`          | Nodes + edges in React Flow format |
+| GET    | `/api/papers`                     | All papers                         |
+| GET    | `/api/papers/:code`               | Single paper                       |
+| GET    | `/api/papers/:code/prerequisites` | Prerequisites for a paper          |
+| POST   | `/api/progress`                   | Create a progress session          |
+| GET    | `/api/progress/:id`               | Get progress                       |
+| PATCH  | `/api/progress/:id`               | Update completed papers            |
+| DELETE | `/api/progress/:id`               | Delete progress                    |
 
 ## Database
 
