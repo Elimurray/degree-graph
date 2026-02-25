@@ -18,7 +18,7 @@ export function useDegreeGraph(degreeId) {
     async function fetchGraph() {
       setLoading(true)
       try {
-        const response = await fetch(`/api/degrees/${degreeId}/graph`)
+        const response = await fetch(`${import.meta.env.VITE_API_URL ?? ''}/api/degrees/${degreeId}/graph`)
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`)
         }

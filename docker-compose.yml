@@ -1,0 +1,24 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: degree-graph-server
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      NODE_ENV: production
+      PORT: 3002
+      PGHOST: boe_postgres
+      PGPORT: 5432
+      PGUSER: eli
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: degree_graph
+      CORS_ORIGIN: ${CORS_ORIGIN}
+    networks:
+      - degree_graph_net
+
+networks:
+  degree_graph_net:
+    external: true

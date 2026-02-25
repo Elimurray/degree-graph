@@ -8,7 +8,7 @@ export function useDegrees() {
   useEffect(() => {
     async function fetchDegrees() {
       try {
-        const response = await fetch('/api/degrees')
+        const response = await fetch(`${import.meta.env.VITE_API_URL ?? ''}/api/degrees`)
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`)
         }
