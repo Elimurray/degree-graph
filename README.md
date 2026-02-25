@@ -10,7 +10,7 @@ Currently supports:
 ## Stack
 
 | Layer | Technology |
-| | |
+|---|---|
 | Frontend | React 18 + Vite + Tailwind CSS v4 |
 | Graph | @xyflow/react (React Flow v12) |
 | Backend | Node.js + Express |
@@ -100,8 +100,8 @@ Opens the client at `http://localhost:5173`, API at `http://localhost:3002`.
 
 ## API
 
-| Method |Endpoint | Description |
-| | | |
+| Method | Endpoint | Description |
+|---|---|---|
 | GET | `/api/degrees` | List all degrees |
 | GET | `/api/degrees/:id` | Degree metadata |
 | GET | `/api/degrees/:id/graph` | Nodes + edges in React Flow format |
