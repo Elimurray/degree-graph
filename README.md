@@ -41,8 +41,9 @@ degree-graph/
 │       ├── db/           # pg query functions (graph, papers, degrees, progress)
 │       └── utils/        # graph layout + topological sort
 ├── db/
-│   ├── migrations/       # 001_initial_schema.sql, 002_add_prereq_group_index.sql
-│   └── seed.js           # imports scraper/data/*.json into PostgreSQL
+│   ├── migrations/       # 001_, 002_, 003_... SQL files run in order
+│   ├── migrate.js        # migration runner with schema_migrations tracking
+│   └── seed.js           # per-degree seed script
 └── scraper/
     ├── src/scrapers/     # degrees.js, papers.js
     └── src/utils/        # browser.js, prereqParser.js, addPrereqGroups.js
@@ -68,43 +69,44 @@ cp .env.example .env
 
 ```
 
-### Database setup
+### Run migrations
 
-Run in **cmd.exe** (not PowerShell — stdin redirection `<` requires cmd.exe):
-
-```cmd
+```bash
 npm run migrate
 ```
 
+Automatically detects and runs any `.sql` files in `db/migrations/` that haven't been applied yet, tracked in a `schema_migrations` table. Safe to run multiple times — already-applied migrations are skipped.
+
 ### Scrape data
 
+```bash
 # By slug
-
 npm run scrape -- software-engineering
 npm run scrape -- civil-engineering
 npm run scrape -- computer-science
 
 # By full URL
-
 npm run scrape -- "https://www.waikato.ac.nz/study/subject-regulations/mechanical-engineering"
 
 # Unknown degree — supply metadata manually
-
 npm run scrape -- creative-technologies --name "Bachelor of Creative Technologies" --points 360
 
 # Override the derived degree code
-
 npm run scrape -- software-engineering --code MY-CODE
 
 # Re-fetch all paper details (overwrite existing paper records)
-
 npm run scrape -- software-engineering --force
+```
 
-### Seed database
+### Seed a degree
 
 ```bash
-node db/seed.js
+npm run seed -- computer-science
+npm run seed -- BE-SE
+npm run seed -- civil-engineering   # case-insensitive
 ```
+
+Seeds only the specified degree from `scraper/data/` into the database — upserts papers and the degree, rebuilds its `degree_papers` rows — without touching any other degree already in the database. The argument can be a degree code (`BE-SE`) or a slug (`civil-engineering`).
 
 ### Run
 
@@ -131,7 +133,7 @@ Opens the client at `http://localhost:5173`, API at `http://localhost:3002`.
 
 ## Database
 
-PostgreSQL runs in Docker on a Raspberry Pi 5.
+PostgreSQL runs in Docker on a Raspberry Pi 5. Migrations are managed by `db/migrate.js` and tracked in a `schema_migrations` table — drop a new numbered `.sql` file into `db/migrations/` and run `npm run migrate`.
 
 ### Schema
 
@@ -145,12 +147,11 @@ user_progress   — id, degree_id, completed_papers[]
 
 `group_index` encodes CNF prerequisite logic: rows sharing the same `(paper_code, group_index)` are OR alternatives; rows with different `group_index` values for the same paper are AND requirements.
 
-## Re-scraping
+## Re-scraping a degree
 
-If paper data needs updating:
+To update a degree's data end-to-end:
 
 ```bash
-npm run scrape                         # re-scrape all papers
-node scraper/src/utils/addPrereqGroups.js  # re-parse AND/OR prereq groups
-node db/seed.js                        # re-seed the database
+npm run scrape -- software-engineering --force   # re-scrape papers (overwrite existing)
+npm run seed -- software-engineering             # re-seed into the database
 ```

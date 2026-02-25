@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev --workspace=client\" \"npm run dev --workspace=server\"",
-    "migrate": "ssh pi5@pi5.local \"docker exec -i boe_postgres psql -U eli -d degree_graph -f -\" < db/migrations/001_initial_schema.sql",
+    "migrate": "node db/migrate.js",
+    "seed": "node db/seed.js",
     "scrape": "npm run scrape --workspace=scraper",
     "build": "npm run build --workspace=client"
   },
