@@ -12,7 +12,7 @@ async function getGraphData(degreeId) {
   )
 
   const prereqsResult = await query(
-    `SELECT pr.paper_code, pr.requires_code, pr.type
+    `SELECT pr.paper_code, pr.requires_code, pr.type, pr.group_index
      FROM prerequisites pr
      WHERE pr.paper_code  IN (SELECT paper_code FROM degree_papers WHERE degree_id = $1)
        AND pr.requires_code IN (SELECT paper_code FROM degree_papers WHERE degree_id = $1)`,

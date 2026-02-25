@@ -59,43 +59,60 @@ async function seed() {
     console.log(`  -> ${papersInserted} paper rows upserted`);
 
     // -----------------------------------------------------------------
-    // 2. Insert prerequisites / corequisites
-    //    Only insert edges where both ends exist in papers.json
+    // 2. Insert prerequisites / corequisites using prereq_groups
+    //    group_index encodes CNF structure: same group_index = OR, different = AND
     // -----------------------------------------------------------------
     const validCodes = new Set(papers.map(p => p.code));
+
+    // Clear all existing prerequisite rows so we can re-insert cleanly
+    // (safer than ON CONFLICT when group_index may have changed)
+    await client.query('DELETE FROM prerequisites');
+    console.log('Cleared existing prerequisites');
 
     let prereqsInserted = 0;
     let prereqsSkipped  = 0;
 
     for (const paper of papers) {
-      // Prerequisites (type = 'pre')
-      for (const reqCode of (paper.prerequisites || [])) {
-        if (!validCodes.has(reqCode)) {
-          prereqsSkipped++;
-          continue;
+      const prereqGroups = paper.prereq_groups || [];
+
+      if (prereqGroups.length > 0) {
+        // Use structured prereq_groups with group_index
+        for (let gi = 0; gi < prereqGroups.length; gi++) {
+          for (const reqCode of (prereqGroups[gi].codes || [])) {
+            if (!validCodes.has(reqCode)) { prereqsSkipped++; continue; }
+            await client.query(
+              `INSERT INTO prerequisites (paper_code, requires_code, type, group_index)
+               VALUES ($1, $2, 'pre', $3)
+               ON CONFLICT (paper_code, requires_code, type) DO UPDATE SET group_index = EXCLUDED.group_index`,
+              [paper.code, reqCode, gi]
+            );
+            prereqsInserted++;
+          }
         }
-        const result = await client.query(
-          `INSERT INTO prerequisites (paper_code, requires_code, type)
-           VALUES ($1, $2, 'pre')
-           ON CONFLICT DO NOTHING`,
-          [paper.code, reqCode]
-        );
-        prereqsInserted += result.rowCount;
+      } else if ((paper.prerequisites || []).length > 0) {
+        // Fallback: paper has prerequisites array but no prereq_groups — insert at group_index 0
+        for (const reqCode of paper.prerequisites) {
+          if (!validCodes.has(reqCode)) { prereqsSkipped++; continue; }
+          await client.query(
+            `INSERT INTO prerequisites (paper_code, requires_code, type, group_index)
+             VALUES ($1, $2, 'pre', 0)
+             ON CONFLICT (paper_code, requires_code, type) DO UPDATE SET group_index = 0`,
+            [paper.code, reqCode]
+          );
+          prereqsInserted++;
+        }
       }
 
-      // Corequisites (type = 'co')
+      // Corequisites always use group_index 0
       for (const reqCode of (paper.corequisites || [])) {
-        if (!validCodes.has(reqCode)) {
-          prereqsSkipped++;
-          continue;
-        }
-        const result = await client.query(
-          `INSERT INTO prerequisites (paper_code, requires_code, type)
-           VALUES ($1, $2, 'co')
-           ON CONFLICT DO NOTHING`,
+        if (!validCodes.has(reqCode)) { prereqsSkipped++; continue; }
+        await client.query(
+          `INSERT INTO prerequisites (paper_code, requires_code, type, group_index)
+           VALUES ($1, $2, 'co', 0)
+           ON CONFLICT (paper_code, requires_code, type) DO UPDATE SET group_index = 0`,
           [paper.code, reqCode]
         );
-        prereqsInserted += result.rowCount;
+        prereqsInserted++;
       }
     }
 

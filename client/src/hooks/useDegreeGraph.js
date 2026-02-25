@@ -29,8 +29,8 @@ export function useDegreeGraph(degreeId) {
           if (prereqType === 'co') {
             return {
               ...edge,
-              animated: true,
-              style: { stroke: '#f59e0b', strokeWidth: 2, strokeDasharray: '5 3' },
+              animated: false,
+              style: { stroke: '#f59e0b', strokeWidth: 2, strokeDasharray: '6 3' },
             }
           }
           return {
@@ -40,8 +40,14 @@ export function useDegreeGraph(degreeId) {
           }
         })
 
+        // Strip backend positions — layout is computed in DegreeGraph
+        const rawNodes = data.nodes.map((node) => ({
+          ...node,
+          position: { x: 0, y: 0 },
+        }))
+
         setDegree(data.degree)
-        setNodes(data.nodes)
+        setNodes(rawNodes)
         setEdges(styledEdges)
       } catch (err) {
         setError(err.message)

@@ -134,15 +134,15 @@ function buildGraph(papers, prereqs) {
   // Build edges — only for prereqs where both ends exist in this degree
   const codeSet = new Set(codes)
   const edges = []
-  for (const { paper_code, requires_code, type } of prereqs) {
+  for (const { paper_code, requires_code, type, group_index } of prereqs) {
     if (!codeSet.has(paper_code) || !codeSet.has(requires_code)) continue
     edges.push({
-      id: `e-${requires_code}-${paper_code}`,
+      id: `e-${requires_code}-${paper_code}-g${group_index ?? 0}`,
       source: requires_code,
       target: paper_code,
       type: 'smoothstep',
       animated: type === 'co',
-      data: { prereqType: type },
+      data: { prereqType: type, groupIndex: group_index ?? 0 },
     })
   }
 
