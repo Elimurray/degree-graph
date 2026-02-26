@@ -73,6 +73,16 @@ const KNOWN_SLUGS = {
     name: 'Bachelor of Cyber Security',
     totalPoints: 360,
   },
+  'psychology': {
+    code: 'BPsych',
+    name: 'Psychology (BA / BSc / BSocSc major)',
+    totalPoints: 360,
+  },
+  'screen-and-media-studies': {
+    code: 'BScreenMedia',
+    name: 'Screen and Media Studies (BA / BSocSc major)',
+    totalPoints: 360,
+  },
 }
 
 /**
@@ -120,10 +130,11 @@ function resolveDegreeFromSlug(slug) {
 }
 
 /**
- * Extract the slug from a full subject-regulations URL.
+ * Extract the slug from a full subject-regulations URL or calendar URL.
  * Handles:
  *   https://www.waikato.ac.nz/study/subject-regulations/software-engineering
  *   https://www.waikato.ac.nz/study/subject-regulations/software-engineering/
+ *   https://www.waikato.ac.nz/about/calendar/regulations/bachelor/arts
  *   software-engineering   (already a slug)
  *
  * @param {string} input - Full URL or slug string.
